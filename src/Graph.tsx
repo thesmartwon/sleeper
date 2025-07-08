@@ -8,7 +8,7 @@ export function Graph(props: {
 	getOwnerString(playerId?: string): string,
 	max: number,
 	position: Position,
-	onMouseOver: (p: PlayerProjection) => void;
+	onPointerOver: (p: PlayerProjection) => void;
 }) {
 	if (!props.max) return;
 
@@ -20,7 +20,7 @@ export function Graph(props: {
 					cy={15}
 					r={4}
 					opacity={props.getOwnerString(player.player_id) ? "0.2" : "1"}
-					onMouseOver={() => props.onMouseOver(player)}
+					onPointerOver={() => props.onPointerOver(player)}
 				/>
 				}
 			</For>

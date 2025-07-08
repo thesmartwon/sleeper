@@ -191,7 +191,7 @@ export function App() {
 										getOwnerString={getOwnerString}
 										position={pos as Position}
 										max={maxProjection()}
-										onMouseOver={p => setSelected(p)}
+										onPointerOver={p => setSelected(p)}
 									/>
 								</svg>
 							</Match>
