@@ -14,7 +14,8 @@
     "@tailwindcss/vite": "^4.1.11",
     "typescript": "^5.7.2",
     "vite": "^7.0.2",
-    "vite-plugin-solid": "^2.11.6"
+    "vite-plugin-solid": "^2.11.6",
+    "wrangler": "^4.23.0"
   },
   "dependencies": {
     "@solid-primitives/storage": "^4.3.3",
