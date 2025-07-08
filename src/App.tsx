@@ -8,7 +8,7 @@ const client = new SleeperApi();
 export type PlayerProjection = Partial<Player> & { projection?: Partial<Record<Stat, number>> };
 
 export function App() {
-	const [username, setUsername] = createSignal<string>();
+	const [username, setUsername] = createSignal<string>("thesmartwon");
 	const [season, setSeason] = createSignal(new Date().getFullYear().toString());
 	const [user] = createResource(() => username(), async user => {
 		const res =await client.getUser(user); 
@@ -134,9 +134,9 @@ export function App() {
 	return (
 		<main class="bg-slate-800 h-screen text-slate-50 flex flex-col">
 			<div class="flex text-2xl">
-				<input id="username" value={username() ?? ""} onInput={ev => setUsername(ev.target.value)} class="input" />
+				<input id="username" value={username() ?? ""} onInput={ev => setUsername(ev.target.value)} class="input" placeholder="username" />
 				<input id="season" value={season()} onInput={ev => setSeason(ev.target.value)} class="w-[10ch] input" />
-				<select id="draft" value={draftId()} onInput={ev => setDraftId(ev.target.value)} class="select">
+				<select id="draft" value={draftId()} onInput={ev => setDraftId(ev.target.value)} class="select" placeholder="draft">
 					<For each={userDrafts()}>
 						{d => <option value={d.draft_id}>{d.metadata.name} ({d.status})</option>}
 					</For>
