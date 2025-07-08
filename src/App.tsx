@@ -182,8 +182,8 @@ export function App() {
 							</Match>
 							<Match when={view() === "graph"}>
 								<svg
-									width={maxProjection() * 8}
-									height={Object.keys(positions()).length * 32}
+									width={maxProjection() * 16}
+									height={64}
 								>
 									<Graph
 										players={players}
@@ -192,6 +192,7 @@ export function App() {
 										position={pos as Position}
 										max={maxProjection()}
 										onPointerOver={p => setSelected(p)}
+										height={32}
 									/>
 								</svg>
 							</Match>

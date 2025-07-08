@@ -7,6 +7,7 @@ export function Graph(props: {
 	getProjection(p: PlayerProjection): number,
 	getOwnerString(playerId?: string): string,
 	max: number,
+	height: number,
 	position: Position,
 	onPointerOver: (p: PlayerProjection) => void;
 }) {
@@ -14,11 +15,12 @@ export function Graph(props: {
 
 	return (
 		<g fill={`var(--color-${props.position.toLowerCase()})`}>
-			<For each={props.players}>
+			<For each={props.players.toReversed()}>
 				{(player) => <circle
+					stroke="currentColor"
 					cx={`${props.getProjection(player) / props.max * 100}%`}
-					cy={15}
-					r={4}
+					cy={props.height}
+					r={props.height / 4}
 					opacity={props.getOwnerString(player.player_id) ? "0.2" : "1"}
 					onPointerOver={() => props.onPointerOver(player)}
 				/>
