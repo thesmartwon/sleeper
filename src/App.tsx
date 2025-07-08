@@ -145,10 +145,6 @@ export function App() {
 				remove: ["lasso2d", "select2d", "zoomOut2d", "zoomIn2d", "autoScale2d"],
 			},
 			legend: { orientation: "h" },
-			grid: {
-				rows: Object.keys(players()).length,
-				columns: 1,
-			},
 			margin: {
 				t: 0,
 				b: 0,
