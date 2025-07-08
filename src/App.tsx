@@ -115,6 +115,16 @@ export function App() {
 			return acc;
 		}, {} as Record<string, (PlayerProjection & { owner: string })[]>)
 
+	const rosters = () => Object.values(players().players)
+		.reduce((acc, cur) => {
+			const owner = leagueUsers()[draftPicks()[cur.player_id ?? ""]];
+			if (owner) {
+				acc[owner.display_name] ??= [];
+				acc[owner.display_name].push(cur);
+			}
+			return acc;
+		}, {} as Record<string, PlayerProjection[]>);
+
 	const [view, setView] = createSignal<"table" | "graph">("graph");
 
 	let chart!: HTMLDivElement;
@@ -215,6 +225,18 @@ export function App() {
 						<div ref={chart} />
 					</Match>
 				</Switch>
+				<div class="grid grid-cols-3">
+					<span>user</span>
+					<span>picks</span>
+					<span>projected</span>
+					<For each={Object.entries(rosters())}>
+						{([display_name, players]) => <>
+							<span>{display_name}</span>
+							<span>{players.length}</span>
+							<span>{players.reduce((acc, cur) => acc + getProjection(cur), 0).toFixed(0)}</span>
+						</>}
+					</For>
+				</div>
 			</div>
 		</main>
 	);
