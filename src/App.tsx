@@ -126,11 +126,11 @@ export function App() {
 			return acc;
 		}, {} as Record<string, PlayerProjection[]>);
 
-	const rows = () => Object.entries(rosters()).map(([name, players]) => ({
+	const rosterRows = () => Object.entries(rosters()).map(([name, players]) => ({
 		name,
 		picks: players.length,
-		projection: players.reduce((acc, cur) => acc + getProjection(cur), 0).toFixed(0),
-	}));
+		projection: players.reduce((acc, cur) => acc + getProjection(cur), 0)
+	})).sort((r1, r2) => r2.projection - r1.projection);
 
 	const [view, setView] = createSignal<"table" | "graph">("graph");
 
@@ -232,11 +232,18 @@ export function App() {
 						<div ref={chart} />
 					</Match>
 				</Switch>
-				<SimpleTable
-					className="w-full"
-					rows={rows()}
-					columns={[{ id: "name" }, {id:  "picks" }, {id: "projection"}]}
-				/>
+				<div class="grid grid-cols-3">
+					<span>user</span>
+					<span>picks</span>
+					<span>projection</span>
+					<For each={rosterRows()}>
+						{row => <>
+							<span>{row.name}</span>
+							<span>{row.picks}</span>
+							<span>{row.projection.toFixed()}</span>
+						</>}
+					</For>
+				</div>
 			</div>
 		</main>
 	);
