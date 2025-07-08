@@ -24,6 +24,7 @@
     "localforage": "^1.10.0",
     "plotly.js-basic-dist-min": "^3.0.1",
     "solid-js": "^1.9.5",
+    "solid-simple-table": "^2.0.0",
     "tailwindcss": "^4.1.11"
   }
 }

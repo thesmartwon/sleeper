@@ -14,3 +14,7 @@ div[role="tooltip"] {
 	ul { @apply p-2 }
 	.arrow { @apply absolute rotate-45 w-4 h-4 bg-inherit; }
 }
+
+.header {
+	display: inline-block;
+}

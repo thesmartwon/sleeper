@@ -3,6 +3,7 @@ import { LeagueUser, Player, Position, SleeperApi, Stat } from "./api";
 import { makePersisted } from "@solid-primitives/storage";
 import localforage from "localforage";
 import Plotly, { PlotData } from "plotly.js-basic-dist-min";
+import { SimpleTable } from "solid-simple-table"
 
 const client = new SleeperApi();
 export type PlayerProjection = Partial<Player> & { projection?: Partial<Record<Stat, number>> };
@@ -125,6 +126,12 @@ export function App() {
 			return acc;
 		}, {} as Record<string, PlayerProjection[]>);
 
+	const rows = () => Object.entries(rosters()).map(([name, players]) => ({
+		name,
+		picks: players.length,
+		projection: players.reduce((acc, cur) => acc + getProjection(cur), 0).toFixed(0),
+	}));
+
 	const [view, setView] = createSignal<"table" | "graph">("graph");
 
 	let chart!: HTMLDivElement;
@@ -152,7 +159,7 @@ export function App() {
 		Plotly.newPlot(chart, traces, {
 			modebar: {
 				orientation: "v",
-				remove: ["lasso2d", "select2d", "zoomOut2d", "zoomIn2d", "autoScale2d"],
+				remove: ["lasso2d", "select2d", "zoomIn2d", "autoScale2d"],
 			},
 			legend: { orientation: "h" },
 			margin: {
@@ -165,7 +172,7 @@ export function App() {
 	});
 
 	return (
-		<main class="h-screen flex flex-col p-2">
+		<main>
 			<div class="flex text-2xl">
 				<input id="username" value={username() ?? ""} onInput={ev => setUsername(ev.target.value)} class="input" placeholder="username" />
 				<input id="season" value={season()} onInput={ev => setSeason(ev.target.value)} class="w-[10ch] input" />
@@ -225,18 +232,11 @@ export function App() {
 						<div ref={chart} />
 					</Match>
 				</Switch>
-				<div class="grid grid-cols-3">
-					<span>user</span>
-					<span>picks</span>
-					<span>projected</span>
-					<For each={Object.entries(rosters())}>
-						{([display_name, players]) => <>
-							<span>{display_name}</span>
-							<span>{players.length}</span>
-							<span>{players.reduce((acc, cur) => acc + getProjection(cur), 0).toFixed(0)}</span>
-						</>}
-					</For>
-				</div>
+				<SimpleTable
+					className="w-full"
+					rows={rows()}
+					columns={[{ id: "name" }, {id:  "picks" }, {id: "projection"}]}
+				/>
 			</div>
 		</main>
 	);
