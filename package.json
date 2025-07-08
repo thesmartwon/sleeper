@@ -19,8 +19,10 @@
   },
   "dependencies": {
     "@solid-primitives/storage": "^4.3.3",
+    "@types/plotly.js-basic-dist-min": "^2.12.4",
     "daisyui": "^5.0.46",
     "localforage": "^1.10.0",
+    "plotly.js-basic-dist-min": "^3.0.1",
     "solid-js": "^1.9.5",
     "tailwindcss": "^4.1.11"
   }

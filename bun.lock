@@ -5,8 +5,10 @@
       "name": "vite-template-solid",
       "dependencies": {
         "@solid-primitives/storage": "^4.3.3",
+        "@types/plotly.js-basic-dist-min": "^2.12.4",
         "daisyui": "^5.0.46",
         "localforage": "^1.10.0",
+        "plotly.js-basic-dist-min": "^3.0.1",
         "solid-js": "^1.9.5",
         "tailwindcss": "^4.1.11",
       },
@@ -262,6 +264,10 @@
 
     "@types/estree": ["@types/estree@1.0.8", "", {}, "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w=="],
 
+    "@types/plotly.js": ["@types/plotly.js@3.0.2", "", {}, "sha512-84eSnXD5gTM36iaOv3/4cduF2X0eptMnK9CcghH56A4uhSiFjAIgqhFGmdq+0yDh2jLQzL1s34CsBU5KD3MvPA=="],
+
+    "@types/plotly.js-basic-dist-min": ["@types/plotly.js-basic-dist-min@2.12.4", "", { "dependencies": { "@types/plotly.js": "*" } }, "sha512-BtvgBR52ZQ9N346gq8eAom9vwh1HAcGTxIUDrQXRMEP75XrSaOF/bXm8PtrZ9WGNUIxo9NxZ6+juKWamJKkYyQ=="],
+
     "acorn": ["acorn@8.14.0", "", { "bin": { "acorn": "bin/acorn" } }, "sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA=="],
 
     "acorn-walk": ["acorn-walk@8.3.2", "", {}, "sha512-cjkyv4OtNCIeqhHrfS81QWXoCBPExR/J62oyEqepVw8WaQeSqpW2uhuLPh1m9eWhDuOo/jUXVTlifvesOWp/4A=="],
@@ -407,6 +413,8 @@
     "picocolors": ["picocolors@1.1.1", "", {}, "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA=="],
 
     "picomatch": ["picomatch@4.0.2", "", {}, "sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg=="],
+
+    "plotly.js-basic-dist-min": ["plotly.js-basic-dist-min@3.0.1", "", {}, "sha512-2DNfjn0Xv+IAk6ksaIm8AHSlKCxWQOx9f3v5JGvzFKPwEbJRsLIy4Up0cOPqO53kL4jrdw8LnUTrM9FAzvKMsQ=="],
 
     "postcss": ["postcss@8.5.6", "", { "dependencies": { "nanoid": "^3.3.11", "picocolors": "^1.1.1", "source-map-js": "^1.2.1" } }, "sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg=="],
 
