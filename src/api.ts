@@ -8,7 +8,7 @@ type User = {
 };
 
 export type Position = "QB" | "RB" | "WR" | "TE" | "K" | "DEF";
-type RosterPosition = Position | "FLEX" | "SUPER_FLEX" | "BN";
+export type RosterPosition = Position | "FLEX" | "SUPER_FLEX" | "BN";
 
 type UserDraft = {
 	"created": number;

@@ -1,9 +1,8 @@
-import { createSignal, createResource, For, createEffect, Switch, Match, createMemo, getOwner } from "solid-js";
-import { LeagueUser, Player, Position, SleeperApi, Stat } from "./api";
+import { createSignal, createResource, For, createEffect, Switch, Match } from "solid-js";
+import { LeagueUser, Player, Position, RosterPosition, SleeperApi, Stat } from "./api";
 import { makePersisted } from "@solid-primitives/storage";
 import localforage from "localforage";
 import Plotly, { PlotData } from "plotly.js-basic-dist-min";
-import { SimpleTable } from "solid-simple-table"
 
 const client = new SleeperApi();
 export type PlayerProjection = Partial<Player> & { projection?: Partial<Record<Stat, number>> };
@@ -74,10 +73,10 @@ export function App() {
 		if (yesterday.getTime() > players().fetchTime) refreshDraftPlayer();
 	});
 
-	function getProjection(p: PlayerProjection): number {
+	function getProjection(p: PlayerProjection | undefined): number {
 		let res = 0;
 		for (const [rule, scalar] of Object.entries(league()?.scoring_settings ?? {})) {
-			res += (p.projection?.[rule as Stat] ?? 0) * scalar;
+			res += (p?.projection?.[rule as Stat] ?? 0) * scalar;
 		}
 		return res;
 	}
@@ -126,13 +125,40 @@ export function App() {
 			return acc;
 		}, {} as Record<string, PlayerProjection[]>);
 
-	const rosterRows = () => Object.entries(rosters()).map(([name, players]) => ({
-		name,
-		picks: players.length,
-		projection: players.reduce((acc, cur) => acc + getProjection(cur), 0)
-	})).sort((r1, r2) => r2.projection - r1.projection);
+	function bestRoster(positions: RosterPosition[], projections: PlayerProjection[]): (PlayerProjection | undefined)[] {
+		// Not optimal -- but close
+		const res: (PlayerProjection | undefined)[] = [];
+		projections = projections.sort((p1, p2) => getProjection(p2) - getProjection(p1));
 
-	const [view, setView] = createSignal<"table" | "graph">("graph");
+		for (const pos of positions) {
+			let availablePositions = [pos];
+			if (pos === "FLEX") availablePositions = ["RB", "WR", "TE"];
+			else if (pos === "SUPER_FLEX") availablePositions = ["QB", "RB", "WR", "TE"];
+
+			const bestPlayer = pos === "BN"
+				? 0
+				: projections.findIndex(p => availablePositions.includes(p.position as any));
+			res.push(projections[bestPlayer]);
+			if (bestPlayer !== -1) projections.splice(bestPlayer, 1);
+		}
+
+		return res;
+	}
+
+	const bestRosters = () => Object.entries(rosters()).reduce((acc, [user, roster]) => {
+		acc[user] = bestRoster(league()?.roster_positions ?? [], roster);
+		return acc;
+	}, {} as Record<string, (PlayerProjection | undefined)[]>);
+
+	const rosterRows = () => Object.entries(bestRosters()).map(([name, players]) => ({
+		name,
+		picks: players.filter(Boolean).length,
+		weeklyProjection: players.filter((_, i) => league()?.roster_positions[i] !== "BN")
+			.reduce((acc, cur) => acc + getProjection(cur), 0) / 18,
+		projection: players.reduce((acc, cur) => acc + getProjection(cur), 0),
+	})).sort((r1, r2) => r2.weeklyProjection - r1.weeklyProjection);
+
+	const [view, setView] = createSignal<"table" | "graph" | "rosters">("graph");
 
 	let chart!: HTMLDivElement;
 	createEffect(() => {
@@ -159,7 +185,7 @@ export function App() {
 		Plotly.newPlot(chart, traces, {
 			modebar: {
 				orientation: "v",
-				remove: ["lasso2d", "select2d", "zoomIn2d", "autoScale2d"],
+				remove: ["lasso2d", "select2d", "zoomIn2d", "autoScale2d", "toImage"],
 			},
 			legend: { orientation: "h" },
 			margin: {
@@ -197,7 +223,7 @@ export function App() {
 				</button>
 			</div>
 			<div role="tablist" class="tabs">
-				{(["graph", "table"] as const).map(t =>
+				{(["graph", "table", "rosters"] as const).map(t =>
 					<button
 						role="tab"
 						class="tab"
@@ -214,11 +240,12 @@ export function App() {
 							{([pos, players]) =>
 								<>
 									<h2 class="text-2xl">{pos}</h2>
-									<div class="w-full grid grid-cols-4 gap-2">
+									<div class="w-full grid grid-cols-5 gap-2">
 										<For each={players}>
 											{p => <>
 												<span>{p.full_name ?? p.team}</span>
 												<span>{p.team}</span>
+												<span>{p.years_exp} years</span>
 												<span>{getProjection(p).toFixed(2)}</span>
 												<span>{getOwnerString(p.player_id!)}</span>
 											</>}
@@ -230,20 +257,49 @@ export function App() {
 					</Match>
 					<Match when={view() === "graph"}>
 						<div ref={chart} />
+						<div class="grid grid-cols-4">
+							<span>user</span>
+							<span>picks</span>
+							<span>weekly projection</span>
+							<For each={rosterRows()}>
+								{row => <>
+									<span>{row.name}</span>
+									<span>{row.picks}</span>
+									<span>{row.weeklyProjection.toFixed(2)}</span>
+								</>}
+							</For>
+						</div>
+					</Match>
+					<Match when={view() === "rosters"}>
+						<div
+							class="grid grid-cols-(--cols) grid-rows-(--rows) grid-flow-col gap-2"
+							style={{
+								'--cols': `1fr repeat(${Object.keys(bestRosters()).length}, minmax(200px, 1fr))`,
+								'--rows': `1fr repeat(${league()?.roster_positions.length ?? 0}, minmax(0, 1fr))`,
+							}}
+						>
+							<span />
+							<For each={league()?.roster_positions}>
+								{(p, i) => <span style={{ "grid-row-start": i() + 2 }}>{p}</span>}
+							</For>
+							{Object.entries(bestRosters()).map(([user, roster], j) => (
+								<>
+									<span
+										class="font-bold"
+										style={{ "grid-column-start": j + 2, "grid-row-start": 1 }}
+									>
+										{user}
+									</span>
+									<For each={roster}>
+										{(row) => <>
+											<span>{row?.last_name} {getProjection(row) ? getProjection(row).toFixed() : ""}</span>
+										</>}
+									</For>
+								</>
+							))}
+						</div>
 					</Match>
 				</Switch>
-				<div class="grid grid-cols-3">
-					<span>user</span>
-					<span>picks</span>
-					<span>projection</span>
-					<For each={rosterRows()}>
-						{row => <>
-							<span>{row.name}</span>
-							<span>{row.picks}</span>
-							<span>{row.projection.toFixed()}</span>
-						</>}
-					</For>
-				</div>
 			</div>
 		</main>
 	);
