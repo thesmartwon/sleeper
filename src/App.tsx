@@ -257,7 +257,7 @@ export function App() {
 					</Match>
 					<Match when={view() === "graph"}>
 						<div ref={chart} />
-						<div class="grid grid-cols-4">
+						<div class="grid grid-cols-3">
 							<span>user</span>
 							<span>picks</span>
 							<span>weekly projection</span>
